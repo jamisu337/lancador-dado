@@ -1,0 +1,102 @@
+ * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+
+        body {
+            background-color: #1a2530; /* Dark Blue */
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow: hidden; /* Evita barras de rolagem durante o arraste */
+        }
+
+        header {
+            width: 100%; padding: 2rem; display: flex; justify-content: center; position: absolute; top: 0; z-index: 10;
+        }
+
+        .back-link {
+            text-decoration: none; color: #2ecc71; font-weight: bold; display: flex; align-items: center; gap: 10px; transition: 0.3s;
+        }
+        .back-link:hover { opacity: 0.8; transform: translateX(-5px); }
+
+        /* --- CENA 3D --- */
+        .scene {
+            width: 200px;
+            height: 200px;
+            perspective: 800px; /* Perspectiva para o 3D */
+            margin-top: 20vh;
+            cursor: grab; /* Mãozinha aberta */
+        }
+
+        .scene:active {
+            cursor: grabbing; /* Mãozinha fechada ao clicar */
+        }
+
+        .cube {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transform: translateZ(-100px) rotateX(-20deg) rotateY(-20deg); /* Posição inicial levemente inclinada */
+            /* A transição será controlada via JS para alternar entre "suave" (botão) e "instantânea" (mouse) */
+        }
+
+        /* FACES */
+        .cube__face {
+            position: absolute; width: 200px; height: 200px;
+            background: white; border: 2px solid #ccc; border-radius: 20px;
+            display: flex; justify-content: center; align-items: center;
+            box-shadow: inset 0 0 40px rgba(0,0,0,0.1);
+            user-select: none; /* Impede selecionar o texto/bolinhas ao arrastar */
+            
+            /* Grid para bolinhas */
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            padding: 20px;
+            backface-visibility: hidden; /* Otimização de performance */
+        }
+
+        /* BOLINHAS */
+        .dot {
+            width: 25px; height: 25px; background-color: #1a2530; border-radius: 50%;
+            justify-self: center; align-self: center;
+            box-shadow: inset 2px 2px 5px rgba(255,255,255,0.5);
+        }
+
+        /* POSICIONAMENTO */
+        .cube__face--1 { transform: rotateY(  0deg) translateZ(100px); }
+        .cube__face--2 { transform: rotateY( 90deg) translateZ(100px); }
+        .cube__face--3 { transform: rotateY(180deg) translateZ(100px); }
+        .cube__face--4 { transform: rotateY(-90deg) translateZ(100px); }
+        .cube__face--5 { transform: rotateX( 90deg) translateZ(100px); }
+        .cube__face--6 { transform: rotateX(-90deg) translateZ(100px); }
+
+        /* LAYOUT DAS BOLINHAS */
+        .face-1 .dot:nth-child(1) { grid-area: 2 / 2; }
+        .face-2 .dot:nth-child(1) { grid-area: 1 / 1; } .face-2 .dot:nth-child(2) { grid-area: 3 / 3; }
+        .face-3 .dot:nth-child(1) { grid-area: 1 / 1; } .face-3 .dot:nth-child(2) { grid-area: 2 / 2; } .face-3 .dot:nth-child(3) { grid-area: 3 / 3; }
+        .face-4 .dot:nth-child(1) { grid-area: 1 / 1; } .face-4 .dot:nth-child(2) { grid-area: 1 / 3; } .face-4 .dot:nth-child(3) { grid-area: 3 / 1; } .face-4 .dot:nth-child(4) { grid-area: 3 / 3; }
+        .face-5 .dot:nth-child(1) { grid-area: 1 / 1; } .face-5 .dot:nth-child(2) { grid-area: 1 / 3; } .face-5 .dot:nth-child(3) { grid-area: 3 / 1; } .face-5 .dot:nth-child(4) { grid-area: 3 / 3; } .face-5 .dot:nth-child(5) { grid-area: 2 / 2; }
+        .face-6 .dot:nth-child(1) { grid-area: 1 / 1; } .face-6 .dot:nth-child(2) { grid-area: 1 / 3; } .face-6 .dot:nth-child(3) { grid-area: 2 / 1; } .face-6 .dot:nth-child(4) { grid-area: 2 / 3; } .face-6 .dot:nth-child(5) { grid-area: 3 / 1; } .face-6 .dot:nth-child(6) { grid-area: 3 / 3; }
+
+        /* CONTROLES */
+        .controls {
+            margin-top: 100px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            z-index: 10; /* Garante que o botão fique acima da área de clique se necessário */
+        }
+
+        .roll-btn {
+            background-color: #2ecc71; color: #1a2530; border: none; padding: 15px 40px;
+            font-size: 1.2rem; font-weight: bold; border-radius: 50px; cursor: pointer;
+            box-shadow: 0 5px 15px rgba(46, 204, 113, 0.4); transition: 0.3s;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .roll-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(46, 204, 113, 0.6); }
+        .roll-btn:active { transform: translateY(1px); }
+
+        .hint-text { color: #666; font-size: 0.9rem; margin-top: 10px; pointer-events: none;}
